@@ -1,0 +1,22 @@
+{
+  "name": "chois-english-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bodyMist/chois-english-back.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bodyMist/chois-english-back/issues"
+  },
+  "homepage": "https://github.com/bodyMist/chois-english-back#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
