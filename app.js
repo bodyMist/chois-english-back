@@ -3,7 +3,7 @@ const app = express();
 const port = 3000;
 
 const mongoose = require("mongoose");
-const DB_URI = "mongodb://127.0.0.1:27017/chois-english";
+const DB_URI = "mongodb://210.91.148.88:27017/chois-english";
 
 const server = async () => {
   try {
