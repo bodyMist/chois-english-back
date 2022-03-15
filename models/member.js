@@ -4,12 +4,10 @@ const { Schema } = mongoose.Schema;
 const MemberSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    age: Number,
-    address: {
-      city: String,
-      street: String,
-      zipCode: String,
-    },
+    account: { type: String, required: true },
+    password: { type: String, required: true },
+    email: { type: String, required: true },
+    images: [{ type: mongoose.Schema.Types.ObjectId, ref: "Image" }],
   },
   { timestamps: true }
 );
