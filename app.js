@@ -5,6 +5,8 @@ const port = 3000;
 const mongoose = require("mongoose");
 const DB_URI = "mongodb://210.91.148.88:27017/chois-english";
 
+const memberController = require("./routers/memberController");
+
 const server = async () => {
   try {
     await mongoose
@@ -13,6 +15,7 @@ const server = async () => {
       .catch((e) => console.log(e));
 
     app.use(express.json());
+    app.use("/member", memberController);
 
     app.listen(port, () => {
       console.log("start server on port3000");
