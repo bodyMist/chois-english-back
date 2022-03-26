@@ -23,6 +23,7 @@ const server = async () => {
       })
     );
     app.use("/member", memberController);
+    app.use("/image", imageController);
 
     app.listen(port, () => {
       console.log("start server on port3000");
