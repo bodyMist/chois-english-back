@@ -91,9 +91,21 @@ memberRouter.delete("/delete", async (req, res) => {
 memberRouter.post("/login", async (req, res) => {
   try {
     console.log("\nMember Login Request");
-    await Member.findOne({ ...req.body });
-    console.log(success);
-    return res.status(200).send({ success });
+    const member = { ...req.body };
+
+    const result = await Member.findOne({
+      account: member.account,
+      password: member.password,
+    });
+    console.log({ result });
+
+    if (result === null) {
+      console.log("No Matching");
+      return res.status(200).send({ message: "No Matching" });
+    } else {
+      console.log(success);
+      return res.status(200).send({ success });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message });
