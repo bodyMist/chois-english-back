@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const req = require("express/lib/request");
 const { isValidObjectId } = require("mongoose");
 const { Member } = require("../models/member");
 const memberRouter = Router();
@@ -105,6 +106,30 @@ memberRouter.post("/login", async (req, res) => {
     } else {
       console.log(success);
       return res.status(200).send({ success });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+});
+
+// 아이디 찾기
+memberRouter.get("/findAccount", async (req, res) => {
+  try {
+    console.log("\nMember Account Finder Request");
+    const member = { ...req.query };
+    const result = await Member.findOne({
+      name: member.name,
+      email: member.email,
+    });
+    console.log({ result });
+
+    if (result === null) {
+      console.log("No Matching");
+      return res.status(200).send({ message: "No Matching" });
+    } else {
+      console.log(success);
+      return res.status(200).send({ account: result.account });
     }
   } catch (error) {
     console.log(error);
