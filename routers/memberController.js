@@ -87,4 +87,17 @@ memberRouter.delete("/delete", async (req, res) => {
   }
 });
 
+// 로그인 & 로그아웃의 세션 관리는 이후 추가 예정
+memberRouter.post("/login", async (req, res) => {
+  try {
+    console.log("\nMember Login Request");
+    await Member.findOne({ ...req.body });
+    console.log(success);
+    return res.status(200).send({ success });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+});
+
 module.exports = memberRouter;
