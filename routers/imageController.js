@@ -20,3 +20,5 @@ imageRouter.post("/imageupload", async (req, res) => {
     return res.status(400).send({ error: error.message });
   }
 });
+
+module.exports = imageRouter;
