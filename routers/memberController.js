@@ -1,5 +1,4 @@
 const { Router } = require("express");
-const req = require("express/lib/request");
 const { isValidObjectId } = require("mongoose");
 const { Member } = require("../models/member");
 const imageRouter = require("./imageController");
@@ -165,6 +164,18 @@ imageRouter.delete("/deleteImage", async (req, res) => {
   }
 });
 
-imageRouter.get("/getMemberImages", async (req, res) => {});
+// 회원 연동 이미지 조회
+memberRouter.get("/getMemberImages", async (req, res) => {
+  try {
+    console.log("\nGet Member Images Request");
+    const { id } = req.query;
+    images = await Member.findById({ _id: id }, "images");
+    console.log(success);
+    return res.status(200).send({ result: images });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ result: error.message });
+  }
+});
 
 module.exports = memberRouter;
