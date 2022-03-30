@@ -19,7 +19,7 @@ memberRouter.post("/join", async (req, res) => {
     return res.status(200).send({ member });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message });
+    return res.status(400).send({ result: error.message });
   }
 });
 
@@ -38,10 +38,10 @@ memberRouter.get("/checkAccount/:account", async (req, res) => {
       console.log("아이디 사용불가");
       resultMessage = failure; // 아이디 중복
     }
-    return res.status(200).json({ message: resultMessage });
+    return res.status(200).json({ result: resultMessage });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
@@ -56,7 +56,7 @@ memberRouter.get("/mypage/:memberId", async (req, res) => {
     return res.status(200).send({ member });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
@@ -68,10 +68,10 @@ memberRouter.put("/update/:memberId", async (req, res) => {
     await Member.updateOne({ _id: id }, { $set: { ...req.body } });
 
     console.log(success);
-    return res.status(200).send({ success });
+    return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
@@ -82,10 +82,10 @@ memberRouter.delete("/delete", async (req, res) => {
     const { id } = req.query;
     await Member.deleteOne({ _id: id });
     console.log(success);
-    return res.status(200).send({ success });
+    return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
@@ -103,14 +103,14 @@ memberRouter.post("/login", async (req, res) => {
 
     if (result === null) {
       console.log("No Matching");
-      return res.status(200).send({ message: "No Matching" });
+      return res.status(200).send({ result: "No Matching" });
     } else {
       console.log(success);
-      return res.status(200).send({ success });
+      return res.status(200).send({ result: success });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
@@ -123,18 +123,16 @@ memberRouter.get("/findAccount", async (req, res) => {
       name: member.name,
       email: member.email,
     });
-    console.log({ result });
-
     if (result === null) {
       console.log("No Matching");
-      return res.status(200).send({ message: "No Matching" });
+      return res.status(200).send({ result: "No Matching" });
     } else {
       console.log(success);
-      return res.status(200).send({ account: result.account });
+      return res.status(200).send({ result: result.account });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
@@ -146,10 +144,10 @@ imageRouter.post("/saveImage", async (req, res) => {
     await image.save();
 
     console.log(success);
-    return res.status(200).send({ message: success });
+    return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message });
+    return res.status(400).send({ result: error.message });
   }
 });
 
@@ -163,7 +161,7 @@ imageRouter.delete("/deleteImage", async (req, res) => {
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({ result: error.message });
   }
 });
 
