@@ -2,6 +2,7 @@ const { Router } = require("express");
 const req = require("express/lib/request");
 const { isValidObjectId } = require("mongoose");
 const { Member } = require("../models/member");
+const imageRouter = require("./imageController");
 const memberRouter = Router();
 
 const success = "success";
@@ -136,5 +137,36 @@ memberRouter.get("/findAccount", async (req, res) => {
     return res.status(500).send({ error: error.message });
   }
 });
+
+// 회원-이미지 저장 연동
+imageRouter.post("/saveImage", async (req, res) => {
+  try {
+    console.log("\nImage Linked Store Request");
+    const image = new Image({ ...req.body });
+    await image.save();
+
+    console.log(success);
+    return res.status(200).send({ message: success });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ error: error.message });
+  }
+});
+
+// 회원-이미지 삭제
+imageRouter.delete("/deleteImage", async (req, res) => {
+  try {
+    console.log("/Image Delete Request");
+    const { imageId } = req.query;
+    await Image.deleteOne({ _id: imageId });
+    console.log(success);
+    return res.status(200).send({ result: success });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+});
+
+imageRouter.get("/getMemberImages", async (req, res) => {});
 
 module.exports = memberRouter;
