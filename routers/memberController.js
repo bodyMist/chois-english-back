@@ -117,8 +117,9 @@ memberRouter.get("/checkMember", async (req, res) => {
   try {
     console.log("\nMember Account Finder Request");
     const member = { ...req.query };
+    console.log(member);
     const result = await Member.findOne({
-      member,
+      ...member,
     });
 
     if (result === null) {
@@ -126,6 +127,7 @@ memberRouter.get("/checkMember", async (req, res) => {
       return res.status(200).send({ result: failure });
     } else {
       console.log(success);
+      console.log(result);
       return res.status(200).send({ result: success, member: result });
     }
   } catch (error) {
