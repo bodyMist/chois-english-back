@@ -4,8 +4,8 @@ const { Member } = require("../models/member");
 const imageRouter = require("./imageController");
 const memberRouter = Router();
 
-const success = "success";
-const failure = "failure";
+const success = true;
+const failure = false;
 
 // 회원가입 post
 memberRouter.post("/join", async (req, res) => {
@@ -15,10 +15,10 @@ memberRouter.post("/join", async (req, res) => {
     await member.save();
 
     console.log(success);
-    return res.status(200).send({ member });
+    return res.status(200).send({ result: success, member });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ result: error.message });
+    return res.status(400).send({ error: error.message, result: failure });
   }
 });
 
@@ -40,7 +40,7 @@ memberRouter.get("/checkAccount/:account", async (req, res) => {
     return res.status(200).json({ result: resultMessage });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -52,10 +52,10 @@ memberRouter.get("/mypage/:memberId", async (req, res) => {
     const member = await Member.findById(id);
 
     console.log(success);
-    return res.status(200).send({ member });
+    return res.status(200).send({ result: success, member });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -65,12 +65,11 @@ memberRouter.put("/update/:memberId", async (req, res) => {
     console.log("\nMember Info Update Request");
     const id = req.params.memberId;
     await Member.updateOne({ _id: id }, { $set: { ...req.body } });
-
     console.log(success);
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -84,7 +83,7 @@ memberRouter.delete("/delete", async (req, res) => {
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -102,14 +101,14 @@ memberRouter.post("/login", async (req, res) => {
 
     if (result === null) {
       console.log("No Matching");
-      return res.status(200).send({ result: "No Matching" });
+      return res.status(200).send({ result: failure });
     } else {
       console.log(success);
       return res.status(200).send({ result: success });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -124,14 +123,14 @@ memberRouter.get("/findAccount", async (req, res) => {
     });
     if (result === null) {
       console.log("No Matching");
-      return res.status(200).send({ result: "No Matching" });
+      return res.status(200).send({ result: failure });
     } else {
       console.log(success);
-      return res.status(200).send({ result: result.account });
+      return res.status(200).send({ result: success, account: result.account });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -146,7 +145,7 @@ imageRouter.post("/saveImage", async (req, res) => {
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -160,7 +159,7 @@ imageRouter.delete("/deleteImage", async (req, res) => {
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -174,7 +173,7 @@ memberRouter.get("/getMemberImages", async (req, res) => {
     return res.status(200).send({ result: images });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ result: error.message });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
