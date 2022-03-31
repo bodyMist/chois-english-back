@@ -113,7 +113,7 @@ memberRouter.post("/login", async (req, res) => {
 });
 
 // 아이디 찾기 || 비밀번호 찾기
-memberRouter.get("/findAccount", async (req, res) => {
+memberRouter.get("/checkMember", async (req, res) => {
   try {
     console.log("\nMember Account Finder Request");
     const member = { ...req.query };
