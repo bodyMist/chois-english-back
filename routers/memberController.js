@@ -112,21 +112,21 @@ memberRouter.post("/login", async (req, res) => {
   }
 });
 
-// 아이디 찾기
+// 아이디 찾기 || 비밀번호 찾기
 memberRouter.get("/findAccount", async (req, res) => {
   try {
     console.log("\nMember Account Finder Request");
     const member = { ...req.query };
     const result = await Member.findOne({
-      name: member.name,
-      email: member.email,
+      member,
     });
+
     if (result === null) {
       console.log("No Matching");
       return res.status(200).send({ result: failure });
     } else {
       console.log(success);
-      return res.status(200).send({ result: success, account: result.account });
+      return res.status(200).send({ result: success, member: result });
     }
   } catch (error) {
     console.log(error);
