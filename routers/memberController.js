@@ -104,7 +104,7 @@ memberRouter.post("/login", async (req, res) => {
       return res.status(200).send({ result: failure });
     } else {
       console.log(success);
-      return res.status(200).send({ result: success });
+      return res.status(200).send({ result: success, member: { result } });
     }
   } catch (error) {
     console.log(error);
