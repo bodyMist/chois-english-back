@@ -1,5 +1,6 @@
 const express = require("express");
 const fileUpload = require("express-fileupload");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
@@ -22,6 +23,7 @@ const server = async () => {
         createParentPath: true,
       })
     );
+    app.use(cors());
     app.use("/member", memberController);
     app.use("/image", imageController);
 
