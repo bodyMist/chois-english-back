@@ -24,4 +24,23 @@ imageRouter.post("/localCaption", async (req, res) => {
   }
 });
 
+// 서버 연동 이미지 변환 요청
+imageRouter.post("/serverCaption", async (req, res) => {
+  try {
+    console.log("\nServer Image Caption Request");
+
+    const image = await Image.findById(req.body.id);
+
+    if (image.caption === null) {
+      // construct Caption
+    }
+
+    console.log(success);
+    return res.status(200).send({ result: success, image });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ error: error.message, result: failure });
+  }
+});
+
 module.exports = imageRouter;
