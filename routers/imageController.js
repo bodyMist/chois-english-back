@@ -43,4 +43,19 @@ imageRouter.post("/serverCaption", async (req, res) => {
   }
 });
 
+// 랜덤 문제 요청
+imageRouter.get("/random", async (req, res) => {
+  try {
+    console.log("\nRandom Question Request");
+    const image = await Image.aggregate([{ $sample: { size: 1 } }]);
+    console.log({ ...image });
+
+    console.log(success);
+    return res.status(200).send({ result: success, image });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ error: error.message, result: failure });
+  }
+});
+
 module.exports = imageRouter;
