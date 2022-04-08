@@ -19,7 +19,7 @@ const imageRouter = Router();
 
 const success = "success";
 const failure = "failure";
-const imagesUrl = "";
+const imageUrl = "http://210.91.148.88:3000/";
 
 // 로컬 이미지 변환 요청
 imageRouter.post("/localCaption", async (req, res) => {
@@ -77,15 +77,25 @@ imageRouter.get("/random", async (req, res) => {
 imageRouter.post("/saveImage", upload.single("file"), async (req, res) => {
   try {
     console.log("\nSave Image Request");
-
-    // const member = await Member.findById(req.body.memberId);
+    console.log(req.file);
+    //const member = await Member.findById(req.body.memberId);
     const image = new Image({
-      imageName: req.file.originalname,
-      url: req.file.path,
+      imageName: req.file.filename,
+      url: imageUrl + req.file.path,
     });
-    console.log(image);
-    // res.json(req.file);
-    // console.log(req.file);
+
+    await image.save();
+    await Member.updateOne(
+      { _id: req.body.memberId },
+      {
+        $push: { images: image },
+      }
+    );
+
+    console.log(success);
+    return res
+      .status(200)
+      .send({ result: success, imageId: image.id, url: image.url });
   } catch (error) {
     console.log(error);
     return res.status(400).send({ error: error.message, result: failure });
