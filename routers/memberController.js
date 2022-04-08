@@ -136,47 +136,4 @@ memberRouter.get("/checkMember", async (req, res) => {
   }
 });
 
-// 회원-이미지 저장 연동
-imageRouter.post("/saveImage", async (req, res) => {
-  try {
-    console.log("\nImage Linked Store Request");
-    const image = new Image({ ...req.body });
-    await image.save();
-
-    console.log(success);
-    return res.status(200).send({ result: success });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ error: error.message, result: failure });
-  }
-});
-
-// 회원-이미지 삭제
-imageRouter.delete("/deleteImage", async (req, res) => {
-  try {
-    console.log("/Image Delete Request");
-    const { imageId } = req.query;
-    await Image.deleteOne({ _id: imageId });
-    console.log(success);
-    return res.status(200).send({ result: success });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ error: error.message, result: failure });
-  }
-});
-
-// 회원 연동 이미지 조회
-memberRouter.get("/getMemberImages", async (req, res) => {
-  try {
-    console.log("\nGet Member Images Request");
-    const { id } = req.query;
-    images = await Member.findById({ _id: id }, "images");
-    console.log(success);
-    return res.status(200).send({ result: images });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ error: error.message, result: failure });
-  }
-});
-
 module.exports = memberRouter;
