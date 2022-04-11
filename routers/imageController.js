@@ -38,7 +38,7 @@ const tempImageUrl = "http://210.91.148.88:3000/temp/";
 // 로컬 이미지 변환 요청
 imageRouter.post(
   "/localCaption",
-  tempUpload.single("example"),
+  tempUpload.single("file"),
   async (req, res) => {
     try {
       console.log("\nLocal Image Caption Request");
