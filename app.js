@@ -67,7 +67,7 @@ if (cluster.isMaster) {
         .connect(DB_URI)
         .then(() => console.log("Successfully connected to mongodb"))
         .catch((e) => console.log(e));
-
+      mongoose.set("debug", true);
       app.use("/static", express.static("static"));
       app.use(express.json());
       app.use(cors());
