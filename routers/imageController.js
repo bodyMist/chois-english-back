@@ -5,49 +5,31 @@ const { Member } = require("../models/member");
 
 const imageRouter = Router();
 const fs = require("fs");
-const multer = require("multer");
-const tempUpload = multer({
-  storage: multer.diskStorage({
-    // set a localstorage destination
-    destination: (req, file, cb) => {
-      cb(null, "temp/");
-    },
-    // convert a file name
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    },
-  }),
-});
+
 const success = "success";
 const failure = "failure";
 const imageUrl = "http://210.91.148.88:3000/static/";
-const tempImageUrl = "http://210.91.148.88:3000/temp/";
 
 // 로컬 이미지 변환 요청
-imageRouter.post(
-  "/localCaption",
-  tempUpload.single("file"),
-  async (req, res) => {
-    try {
-      console.log("\nLocal Image Caption Request");
-      const url = tempImageUrl + req.file.filename;
+imageRouter.post("/localCaption", async (req, res) => {
+  try {
+    console.log("\nLocal Image Caption Request");
+    const image = req.files.file;
+    console.log(image);
 
-      // construct Caption
+    // construct Caption
 
-      // delete a temporarily saved image
-      const caption = "sibal jonna himdleda";
-      const blank = "sibal";
-      const dir = url.replace(tempImageUrl, "temp/");
-      fs.unlinkSync(dir);
+    // delete a temporarily saved image
+    const caption = "sibal jonna himdleda";
+    const blank = "sibal";
 
-      console.log(success);
-      return res.status(200).send({ result: success, caption, blank });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send({ error: error.message, result: failure });
-    }
+    console.log(success);
+    return res.status(200).send({ result: success, caption, blank });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message, result: failure });
   }
-);
+});
 
 // 서버 연동 이미지 변환 요청
 imageRouter.post("/serverCaption", async (req, res) => {
