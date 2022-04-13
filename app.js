@@ -39,6 +39,7 @@ if (cluster.isMaster) {
 } else if (cluster.isWorker) {
   const express = require("express");
   const cors = require("cors");
+  const fileUpload = require("express-fileupload");
   const app = express();
   const port = 3000;
 
@@ -70,6 +71,7 @@ if (cluster.isMaster) {
       app.use("/static", express.static("static"));
       app.use(express.json());
       app.use(cors());
+      app.use(fileUpload());
 
       app.use("/member", memberController);
       app.use("/image", imageController);
