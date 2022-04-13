@@ -5,6 +5,7 @@ const { Member } = require("../models/member");
 
 const imageRouter = Router();
 const fs = require("fs");
+const { NOTFOUND } = require("dns");
 
 const success = "success";
 const failure = "failure";
@@ -54,11 +55,19 @@ imageRouter.post("/serverCaption", async (req, res) => {
 imageRouter.get("/random", async (req, res) => {
   try {
     console.log("\nRandom Question Request");
-    const image = await Image.aggregate([{ $sample: { size: 1 } }]);
-    console.log({ ...image });
+    const image = await Image.aggregate([
+      { $match: { caption: NOTFOUND } },
+      { $sample: { size: 1 } },
+    ]);
+    console.log(...image);
+
+    if (image.length === 0) {
+      console.log("No Matched Image");
+      return res.status(500).send({ error: "No Image", result: failure });
+    }
 
     console.log(success);
-    return res.status(200).send({ result: success, image });
+    return res.status(200).send({ result: success, image: image[0] });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
