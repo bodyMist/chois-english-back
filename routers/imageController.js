@@ -141,13 +141,12 @@ imageRouter.delete("/deleteImage", async (req, res) => {
 imageRouter.get("/getMemberImages", async (req, res) => {
   try {
     console.log("\nGet Member's Image Request");
-    const imageIds = (
-      await Member.findById({ _id: req.query.id }).select("-_id images")
-    ).images;
-    console.log(imageIds);
+
+    const imageIds = req.query.id;
+    const images = await Image.find({ _id: { $in: [...imageIds] } });
 
     console.log(success);
-    return res.status(200).send({ result: success });
+    return res.status(200).send({ result: success, images: images });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
