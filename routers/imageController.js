@@ -129,6 +129,16 @@ imageRouter.delete("/deleteImage", async (req, res) => {
 
     const image = await Image.findById({ _id: imageId }).select("url -_id");
 
+    if (!image) {
+      console.log("No Image On DB");
+      return res
+        .status(500)
+        .send({ message: "No Image On DB", result: failure });
+    }
+
+    const dir = image.url.replace(imageUrl, "static/");
+    fs.unlinkSync(dir);
+
     await Member.updateOne(
       { _id: memberId },
       {
@@ -137,8 +147,6 @@ imageRouter.delete("/deleteImage", async (req, res) => {
     );
     await Image.deleteOne({ _id: imageId });
 
-    const dir = image.url.replace(imageUrl, "static/");
-    fs.unlinkSync(dir);
     console.log(success);
     return res.status(200).send({ result: success });
   } catch (error) {
