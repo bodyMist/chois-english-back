@@ -6,18 +6,6 @@ const { Member } = require("../models/member");
 const imageRouter = Router();
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({
-  storage: multer.diskStorage({
-    // set a localstorage destination
-    destination: (req, file, cb) => {
-      cb(null, "static/");
-    },
-    // convert a file name
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    },
-  }),
-});
 const tempUpload = multer({
   storage: multer.diskStorage({
     // set a localstorage destination
@@ -56,7 +44,7 @@ imageRouter.post(
       return res.status(200).send({ result: success, caption, blank });
     } catch (error) {
       console.log(error);
-      return res.status(400).send({ error: error.message, result: failure });
+      return res.status(500).send({ error: error.message, result: failure });
     }
   }
 );
@@ -76,7 +64,7 @@ imageRouter.post("/serverCaption", async (req, res) => {
     return res.status(200).send({ result: success, image });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message, result: failure });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -91,18 +79,28 @@ imageRouter.get("/random", async (req, res) => {
     return res.status(200).send({ result: success, image });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message, result: failure });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
 // 이미지 저장(연동)
-imageRouter.post("/saveImage", upload.single("file"), async (req, res) => {
+imageRouter.post("/saveImage", async (req, res, next) => {
   try {
     console.log("\nSave Image Request");
 
+    const imageFile = req.files.file;
+    const filename = req.files.file.name;
+    const member = Member.findById(req.body.memberId);
+    if (!member) {
+      return res.status(200).send({ result: failure, message: "No Member" });
+    }
+
+    imageFile.mv("./static/" + `${filename}`);
+    const url = imageUrl + filename;
+
     const image = await Image.create({
-      imageName: req.file.filename,
-      url: imageUrl + req.file.filename,
+      imageName: imageFile.name,
+      url: url,
     });
 
     await Member.updateOne(
@@ -115,10 +113,10 @@ imageRouter.post("/saveImage", upload.single("file"), async (req, res) => {
     console.log(success);
     return res
       .status(200)
-      .send({ result: success, imageId: image.id, url: image.url });
+      .send({ result: success, imageId: image.id, url: url });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message, result: failure });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -145,7 +143,7 @@ imageRouter.delete("/deleteImage", async (req, res) => {
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message, result: failure });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
@@ -158,13 +156,11 @@ imageRouter.get("/getMemberImages", async (req, res) => {
     ).images;
     console.log(imageIds);
 
-    //const images = await Image.find({})
-
     console.log(success);
     return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
-    return res.status(400).send({ error: error.message, result: failure });
+    return res.status(500).send({ error: error.message, result: failure });
   }
 });
 
