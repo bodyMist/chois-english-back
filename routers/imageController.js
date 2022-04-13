@@ -153,4 +153,21 @@ imageRouter.get("/getMemberImages", async (req, res) => {
   }
 });
 
+// 정답 제출 및 채점
+imageRouter.post("/answer", async (req, res) => {
+  try {
+    console.log("\nMark an Answer Request");
+    const question = req.body.question;
+    const blank = req.body.blank; // if sentence Q, blank will be full sentence
+    const answer = req.body.answer;
+
+    // post answer to SBert model on Flask Server
+
+    // compare similarity
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message, result: failure });
+  }
+});
+
 module.exports = imageRouter;
