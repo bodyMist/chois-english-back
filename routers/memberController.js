@@ -112,24 +112,48 @@ memberRouter.post("/login", async (req, res) => {
   }
 });
 
-// 아이디 찾기 || 비밀번호 찾기
+// 아이디 찾기
 memberRouter.get("/checkMember", async (req, res) => {
   try {
-    console.log("\nMember Account Finder Request");
+    console.log("\nCheck Member Existence Request");
     const member = { ...req.query };
     console.log(member);
-    const result = await Member.findOne({
+    const result = await Member.find({
       ...member,
-    });
+    }).select("account -_id");
 
     if (result === null) {
       console.log("No Matching");
       return res.status(200).send({ result: failure });
-    } else {
-      console.log(success);
-      console.log(result);
-      return res.status(200).send({ result: success, member: result });
     }
+
+    console.log(success);
+    console.log(result);
+    return res.status(200).send({ result: success, member: result });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message, result: failure });
+  }
+});
+
+// 비밀번호 찾기
+memberRouter.get("/checkAccount", async (req, res) => {
+  try {
+    console.log("\nCheck Member Account Request");
+    const member = { ...req.query };
+    console.log(member);
+    const result = await Member.findOne({
+      ...member,
+    }).select("_id");
+
+    if (result === null) {
+      console.log("No Matching");
+      return res.status(200).send({ result: failure });
+    }
+
+    console.log(success);
+    console.log(result);
+    return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
