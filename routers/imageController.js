@@ -22,6 +22,6 @@ imageRouter.delete("/deleteImage", imageRepository.deleteImage);
 imageRouter.get("/getMemberImages", imageRepository.getMemberImages);
 
 // 정답 제출 및 채점
-imageRouter.post("/answer", imageRepository.gradeAnswer);
+imageRouter.post("/answer/:type", imageRepository.gradeAnswer);
 
 module.exports = imageRouter;
