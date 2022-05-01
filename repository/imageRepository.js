@@ -2,10 +2,22 @@ const { Image } = require("../models/image");
 const { Member } = require("../models/member");
 
 const fs = require("fs");
+const request = require("request");
 
 const success = true;
 const failure = false;
 const imageUrl = "http://210.91.148.88:3000/static/";
+
+const scoringAPI = {
+  url: "http://210.91.148.88:8000/score/",
+  method: "POST",
+  body: {
+    user_input: "",
+    answer: "",
+    blank: "",
+  },
+  json: true,
+};
 
 // 로컬 이미지 변환 요청
 async function captionLocalImage(req, res) {
@@ -162,13 +174,20 @@ async function getMemberImages(req, res) {
 async function gradeAnswer(req, res) {
   try {
     console.log("\nMark an Answer Request");
-    const question = req.body.question;
-    const blank = req.body.blank; // if sentence Q, blank will be full sentence
+    const type = req.params;
+    const user_input = req.body.user_input;
+    const blank = req.body.blank;
     const answer = req.body.answer;
 
-    // post answer to SBert model on Flask Server
+    scoringAPI.url += type;
+    scoringAPI.body = { user_input, blank, answer };
+    console.log(scoringAPI);
 
-    // compare similarity
+    // post answer to SBert model on Flask Server
+    request.post(scoringAPI, (error, response, body) => {
+      res.json(body);
+    });
+    console.log(success);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
