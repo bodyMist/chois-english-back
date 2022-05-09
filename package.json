@@ -18,13 +18,11 @@
   },
   "homepage": "https://github.com/bodyMist/chois-english-back#readme",
   "dependencies": {
-    "cluster": "^0.7.7",
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "express-fileupload": "^1.3.1",
     "mongoose": "^6.2.4",
-    "request": "^2.88.2",
-    "uuid": "^8.3.2"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "mocha": "^9.2.2",
