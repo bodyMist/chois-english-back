@@ -8,17 +8,6 @@ const success = true;
 const failure = false;
 const imageUrl = "http://210.91.148.88:3000/static/";
 
-const scoringAPI = {
-  url: "http://210.91.148.88:8000/score/",
-  method: "POST",
-  body: {
-    user_input: "",
-    answer: "",
-    blank: "",
-  },
-  json: true,
-};
-
 // 로컬 이미지 변환 요청
 async function captionLocalImage(req, res) {
   try {
@@ -174,12 +163,22 @@ async function getMemberImages(req, res) {
 async function gradeAnswer(req, res) {
   try {
     console.log("\nMark an Answer Request");
-    const type = req.params;
+    const scoringAPI = {
+      url: "http://210.91.148.88:8000/score/",
+      method: "POST",
+      body: {
+        user_input: "",
+        answer: "",
+        blank: "",
+      },
+      json: true,
+    };
+    const method = req.params;
     const user_input = req.body.user_input;
     const blank = req.body.blank;
     const answer = req.body.answer;
 
-    scoringAPI.url += type;
+    scoringAPI.url += method.type;
     scoringAPI.body = { user_input, blank, answer };
     console.log(scoringAPI);
 
