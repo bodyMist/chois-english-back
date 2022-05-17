@@ -78,7 +78,8 @@ async function saveImage(req, res) {
 
     const imageFile = req.files.file;
     const filename = req.files.file.name;
-    const member = Member.findById(req.body.memberId);
+    let member = await Member.findById(req.body.memberId);
+
     if (!member) {
       return res.status(200).send({ result: failure, message: "No Member" });
     }
@@ -90,18 +91,13 @@ async function saveImage(req, res) {
       imageName: imageFile.name,
       url: url,
     });
-
-    await Member.updateOne(
-      { _id: req.body.memberId },
-      {
-        $push: { images: image },
-      }
-    );
+    member.images.push(image);
+    member.save();
 
     console.log(success);
     return res
       .status(200)
-      .send({ result: success, imageId: image.id, url: url });
+      .send({ result: success, imageId: image.id, url: url, member: member });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
