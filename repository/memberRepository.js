@@ -100,7 +100,7 @@ async function login(req, res) {
       return res.status(200).send({ result: failure });
     } else {
       console.log(success);
-      return res.status(200).send({ result: success, member: { result } });
+      return res.status(200).send({ result: success, member: result });
     }
   } catch (error) {
     console.log(error);
