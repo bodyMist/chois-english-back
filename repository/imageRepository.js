@@ -84,7 +84,13 @@ async function saveImage(req, res) {
       return res.status(200).send({ result: failure, message: "No Member" });
     }
 
-    imageFile.mv("./static/" + `${filename}`);
+    const memberDir = "./static/" + member._id + "/";
+    if (!fs.existsSync(memberDir)) {
+      console.log("Create Member Directory\n");
+      fs.mkdirSync(memberDir);
+    }
+
+    imageFile.mv(memberDir + `${filename}`);
     const url = imageUrl + filename;
 
     const image = await Image.create({
