@@ -3,10 +3,17 @@ const { Member } = require("../models/member");
 
 const fs = require("fs");
 const request = require("request");
+const { default: axios } = require("axios");
 
 const success = true;
 const failure = false;
 const imageUrl = "http://210.91.148.88:3000/static/";
+const FLASK_SERVER_URL = "http://210.91.148.88:8000/";
+
+// 모델 서버에 captioning Request 보내기
+function requestCaption(file) {
+  axios.post(FLASK_SERVER_URL);
+}
 
 // 로컬 이미지 변환 요청
 async function captionLocalImage(req, res) {
