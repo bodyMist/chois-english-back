@@ -11,7 +11,7 @@ const imgUrl = "http://210.91.148.88:3000/static/";
 staticRouter.get("/:imageName", async (req, res) => {
   try {
     console.log("\nServer Image Access");
-    result = imgUrl + req.params.imageName;
+    result = imgUrl + req.params;
     console.log(result);
 
     return res.status(200).send(fs.readFileSync(result));
