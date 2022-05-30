@@ -1,35 +1,44 @@
 const { Image } = require("../models/image");
 const { Member } = require("../models/member");
-
 const fs = require("fs");
+const path = require("path");
 const request = require("request");
-const { default: axios } = require("axios");
+const FormData = require("form-data");
+const axios = require("axios");
 
 const success = true;
 const failure = false;
 const imageUrl = "http://210.91.148.88:3000/static/";
-const FLASK_SERVER_URL = "http://210.91.148.88:8000/";
-
-// 모델 서버에 captioning Request 보내기
-function requestCaption(file) {
-  axios.post(FLASK_SERVER_URL);
-}
 
 // 로컬 이미지 변환 요청
 async function captionLocalImage(req, res) {
   try {
+    // 받은 이미지 저장
     console.log("\nLocal Image Caption Request");
-    const image = req.files.file;
-    console.log(image);
+    const imageFile = req.files.file;
+    const uploadPath = path.join(`./static/${imageFile.name}`);
+    await imageFile.mv(uploadPath);
+    const form = new FormData();
 
-    // construct Caption
+    form.append("file", fs.createReadStream(`static/${imageFile.name}`));
 
-    // delete a temporarily saved image
-    const caption = "sibal jonna himdleda";
-    const blank = "sibal";
+    await axios
+      .post("http://210.91.148.88:8000/caption", form, {
+        Headers: {
+          "Accept-Encoding": "gzip, deflate, br",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log({ ...response.data });
+        const data = { ...response.data };
+      });
 
+    fs.unlink(uploadPath, (err) => {
+      console.log(err);
+    });
     console.log(success);
-    return res.status(200).send({ result: success, caption, blank });
+    return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
@@ -44,11 +53,15 @@ async function captionServerImage(req, res) {
     const image = await Image.findById(req.body.id);
 
     if (image.caption === null) {
-      // construct Caption
+      return res.status(500).send({ result: failure, message: "No Image" });
     }
+    const imageFile = convertURLtoFile(image.url);
+
+    // construct Caption
+    const { caption, blank } = requestCaption(imageFile);
 
     console.log(success);
-    return res.status(200).send({ result: success, image });
+    return res.status(200).send({ result: success, caption, blank });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
@@ -157,7 +170,11 @@ async function getMemberImages(req, res) {
   try {
     console.log("\nGet Member's Image Request");
 
-    const imageIds = req.query.id;
+    const imageIds = [];
+    req.query.id instanceof Array
+      ? imageIds.push(...req.query.id)
+      : imageIds.push(req.query.id);
+    console.log(imageIds);
     const images = await Image.find({ _id: { $in: [...imageIds] } });
 
     console.log(success);
