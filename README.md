@@ -8,10 +8,12 @@
 * ExpressJS
 * MongoDB
 * Mongoose
+* Apache Benchmark
 
 ### 기술 채택 이유
 * ExpressJS : 메인 서버에서 복잡한 처리 로직이 필요하지 않으며 모델 서버로 라우팅 역할을 주로 하기 위해 선택
 * MongoDB : MERN 스택에 포함되며 ExpressJS와 NodeJS 만큼 쉽게 작업할 수 있는 DB가 필요했기 때문에 선택
+* Apache Benchmark : 웹서버 구축 이후 간단한 성능 테스트를 위해 사용(하단의 ISSUE에서 확인)
 
 ## 주요 기능
 1. 회원 관리(CRUD)
