@@ -4,8 +4,8 @@ const fileUpload = require("express-fileupload");
 const app = express();
 const port = 3000;
 
+require("dotenv").config();
 const mongoose = require("mongoose");
-const DB_URI = "mongodb://210.91.148.88:27017/chois-english";
 
 const memberController = require("./routers/memberController");
 const imageController = require("./routers/imageController");
@@ -14,7 +14,7 @@ const staticController = require("./routers/staticController");
 const server = async () => {
   try {
     await mongoose
-      .connect(DB_URI)
+      .connect(process.env.DB_URI)
       .then(() => console.log("Successfully connected to mongodb"))
       .catch((e) => console.log(e));
     mongoose.set("debug", true);

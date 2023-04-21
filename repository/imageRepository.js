@@ -8,7 +8,9 @@ const axios = require("axios");
 
 const success = true;
 const failure = false;
-const imageUrl = "http://210.91.148.88:3000/static/";
+const basicUrl = process.env.BASIC_URL;
+const imageUrl = process.env.IMAGE_URL;
+const captionUrl = process.env.CAPTION_URL;
 
 // 로컬 이미지 변환 요청
 async function captionLocalImage(req, res) {
@@ -23,22 +25,19 @@ async function captionLocalImage(req, res) {
     form.append("file", fs.createReadStream(`static/${imageFile.name}`));
 
     await axios
-      .post("http://210.91.148.88:8000/caption", form, {
+      .post(captionUrl, form, {
         Headers: {
           "Accept-Encoding": "gzip, deflate, br",
           "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
-        console.log({ ...response.data });
-        const data = { ...response.data };
+        fs.unlink(uploadPath, (err) => {
+          console.log(err);
+        });
+        console.log(success);
+        return res.status(200).send({ result: success, ...response.data });
       });
-
-    fs.unlink(uploadPath, (err) => {
-      console.log(err);
-    });
-    console.log(success);
-    return res.status(200).send({ result: success });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
@@ -51,17 +50,25 @@ async function captionServerImage(req, res) {
     console.log("\nServer Image Caption Request");
 
     const image = await Image.findById(req.body.id);
-
-    if (image.caption === null) {
+    if (!image) {
       return res.status(500).send({ result: failure, message: "No Image" });
     }
-    const imageFile = convertURLtoFile(image.url);
+    const imagePath = image.url.replace(basicUrl, "./");
 
-    // construct Caption
-    const { caption, blank } = requestCaption(imageFile);
+    const form = new FormData();
+    form.append("file", fs.createReadStream(imagePath));
 
-    console.log(success);
-    return res.status(200).send({ result: success, caption, blank });
+    await axios
+      .post(captionUrl, form, {
+        Headers: {
+          "Accept-Encoding": "gzip, deflate, br",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(success);
+        return res.status(200).send({ result: success, ...response.data });
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
@@ -73,18 +80,32 @@ async function getRandomCaption(req, res) {
   try {
     console.log("\nRandom Question Request");
     const image = await Image.aggregate([
-      { $match: { caption: NOTFOUND } },
+      // { $match: { caption: NOTFOUND } },
       { $sample: { size: 1 } },
     ]);
-    console.log(...image);
 
     if (image.length === 0) {
-      console.log("No Matched Image");
+      console.log("No Image");
       return res.status(500).send({ error: "No Image", result: failure });
     }
+    const imagePath = image[0].url.replace(basicUrl, "./");
 
-    console.log(success);
-    return res.status(200).send({ result: success, image: image[0] });
+    const form = new FormData();
+    form.append("file", fs.createReadStream(imagePath));
+
+    await axios
+      .post(captionUrl, form, {
+        Headers: {
+          "Accept-Encoding": "gzip, deflate, br",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(success);
+        return res
+          .status(200)
+          .send({ result: success, image: image[0], ...response.data });
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message, result: failure });
@@ -111,7 +132,7 @@ async function saveImage(req, res) {
     }
 
     imageFile.mv(memberDir + `${filename}`);
-    const url = imageUrl + filename;
+    const url = basicUrl + memberDir.substring(2) + filename;
 
     const image = await Image.create({
       imageName: imageFile.name,
@@ -137,8 +158,9 @@ async function deleteImage(req, res) {
     const imageId = req.query.imageId;
     const memberId = req.query.memberId;
 
-    const image = await Image.findById({ _id: imageId }).select("url -_id");
-
+    const image = await Image.findById({ _id: imageId }).select(
+      "url imageName -_id"
+    );
     if (!image) {
       console.log("No Image On DB");
       return res
@@ -146,7 +168,7 @@ async function deleteImage(req, res) {
         .send({ message: "No Image On DB", result: failure });
     }
 
-    const dir = image.url.replace(imageUrl, "static/");
+    const dir = "./static/" + memberId + "/" + image.imageName;
     fs.unlinkSync(dir);
 
     await Member.updateOne(
@@ -169,7 +191,7 @@ async function deleteImage(req, res) {
 async function getMemberImages(req, res) {
   try {
     console.log("\nGet Member's Image Request");
-
+    console.log(req.query.id);
     const imageIds = [];
     req.query.id instanceof Array
       ? imageIds.push(...req.query.id)
@@ -190,7 +212,7 @@ async function gradeAnswer(req, res) {
   try {
     console.log("\nMark an Answer Request");
     const scoringAPI = {
-      url: "http://210.91.148.88:8000/score/",
+      url: process.env.ANSWER_URL,
       method: "POST",
       body: {
         user_input: "",
